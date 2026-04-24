@@ -181,7 +181,7 @@ export function Dashboard() {
   return (
     <div className="min-h-screen pb-12">
       {/* Header */}
-      <header className="relative overflow-hidden bg-gradient-hero pb-12 pt-5 text-primary-foreground">
+      <header className="relative overflow-hidden bg-gradient-hero pb-20 pt-5 text-primary-foreground">
         <div className="absolute -top-20 right-0 h-56 w-56 rounded-full bg-accent-glow/20 blur-3xl" />
         <div className="absolute -bottom-20 left-0 h-56 w-56 rounded-full bg-primary-glow/30 blur-3xl" />
 

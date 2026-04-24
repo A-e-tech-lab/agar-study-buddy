@@ -33,6 +33,19 @@ export function Dashboard({ user, onLogout }: Props) {
     setSubjectsState(getSubjects());
     setTasksState(getTasks());
     setStreak(getStreak());
+
+    // Unlock Web Audio on first user interaction (required by browsers)
+    const unlock = () => {
+      unlockAudio();
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+    };
+    window.addEventListener("pointerdown", unlock);
+    window.addEventListener("keydown", unlock);
+    return () => {
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+    };
   }, []);
 
   // Reminder check every 30s

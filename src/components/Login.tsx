@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sparkles, Rocket } from "lucide-react";
+import { Sparkles, Rocket, Loader2 } from "lucide-react";
 
 interface Props {
   onLogin: (name: string) => void;
@@ -10,10 +10,16 @@ interface Props {
 
 export function Login({ onLogin }: Props) {
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    if (name.trim()) onLogin(name.trim());
+    if (!name.trim() || loading) return;
+    setLoading(true);
+    // Simulate brief processing so users see feedback
+    setTimeout(() => {
+      onLogin(name.trim());
+    }, 700);
   };
 
   return (
@@ -38,7 +44,7 @@ export function Login({ onLogin }: Props) {
           className="rounded-3xl border bg-card/95 p-8 shadow-elegant backdrop-blur-xl"
         >
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-base">
+            <Label htmlFor="name" className="text-sm">
               What should we call you?
             </Label>
             <Input
@@ -46,17 +52,27 @@ export function Login({ onLogin }: Props) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
-              className="h-12 text-base"
+              className="h-9 text-sm"
+              disabled={loading}
               autoFocus
             />
           </div>
           <Button
             type="submit"
             className="mt-6 h-12 w-full bg-gradient-primary text-base font-semibold shadow-elegant transition-smooth hover:opacity-90"
-            disabled={!name.trim()}
+            disabled={!name.trim() || loading}
           >
-            <Sparkles className="mr-2 h-4 w-4" />
-            Start Studying
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Signing you in...
+              </>
+            ) : (
+              <>
+                <Sparkles className="mr-2 h-4 w-4" />
+                Start Studying
+              </>
+            )}
           </Button>
           <p className="mt-4 text-center text-xs text-muted-foreground">
             No password needed — let's get to work!
@@ -66,3 +82,4 @@ export function Login({ onLogin }: Props) {
     </div>
   );
 }
+

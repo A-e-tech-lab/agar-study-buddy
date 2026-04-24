@@ -17,7 +17,7 @@ import { AddTaskDialog } from "./AddTaskDialog";
 import { AddSubjectDialog } from "./AddSubjectDialog";
 import { TaskItem } from "./TaskItem";
 import { Button } from "@/components/ui/button";
-import { Flame, LogOut, Quote, Target, BookOpen } from "lucide-react";
+import { Flame, LogOut, Quote, Target, BookOpen, Check } from "lucide-react";
 
 interface Props {
   user: string;
@@ -79,7 +79,9 @@ export function Dashboard({ user, onLogout }: Props) {
     () => tasks.filter((t) => t.date === todayKey()),
     [tasks]
   );
-  const completed = todays.filter((t) => t.completed).length;
+  const pendingTasks = todays.filter((t) => !t.completed);
+  const completedTasks = todays.filter((t) => t.completed);
+  const completed = completedTasks.length;
   const progress = todays.length ? Math.round((completed / todays.length) * 100) : 0;
 
   const updateTasks = (next: Task[]) => {
@@ -229,7 +231,14 @@ export function Dashboard({ user, onLogout }: Props) {
         {/* Tasks */}
         <section className="mt-8">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Today's Tasks</h2>
+            <h2 className="text-lg font-semibold">
+              Today's Tasks
+              {todays.length > 0 && (
+                <span className="ml-2 text-sm font-normal text-muted-foreground">
+                  ({pendingTasks.length} pending · {completedTasks.length} done)
+                </span>
+              )}
+            </h2>
             <AddTaskDialog subjects={subjects} onAdd={addTask} />
           </div>
 
@@ -242,16 +251,40 @@ export function Dashboard({ user, onLogout }: Props) {
               </p>
             </div>
           ) : (
-            <div className="space-y-2">
-              {todays.map((t) => (
-                <TaskItem
-                  key={t.id}
-                  task={t}
-                  subject={subjects.find((s) => s.id === t.subjectId)}
-                  onToggle={toggleTask}
-                  onDelete={deleteTask}
-                />
-              ))}
+            <div className="space-y-6">
+              {pendingTasks.length > 0 && (
+                <div className="space-y-2">
+                  {pendingTasks.map((t) => (
+                    <TaskItem
+                      key={t.id}
+                      task={t}
+                      subject={subjects.find((s) => s.id === t.subjectId)}
+                      onToggle={toggleTask}
+                      onDelete={deleteTask}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {completedTasks.length > 0 && (
+                <div>
+                  <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+                    <Check className="h-4 w-4 text-success" />
+                    Completed ({completedTasks.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {completedTasks.map((t) => (
+                      <TaskItem
+                        key={t.id}
+                        task={t}
+                        subject={subjects.find((s) => s.id === t.subjectId)}
+                        onToggle={toggleTask}
+                        onDelete={deleteTask}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </section>

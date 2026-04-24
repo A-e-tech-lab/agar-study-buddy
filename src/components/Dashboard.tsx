@@ -12,6 +12,7 @@ import {
   type Task,
 } from "@/lib/storage";
 import { dailyQuote, randomCheer } from "@/lib/quotes";
+import { playReminderChime, playSuccessChime, unlockAudio } from "@/lib/sound";
 import { AddTaskDialog } from "./AddTaskDialog";
 import { AddSubjectDialog } from "./AddSubjectDialog";
 import { TaskItem } from "./TaskItem";
@@ -49,6 +50,7 @@ export function Dashboard({ user, onLogout }: Props) {
         ) {
           fired.add(t.id);
           const subj = subjects.find((s) => s.id === t.subjectId);
+          playReminderChime();
           toast(`Time to study ${subj?.name ?? t.title} 🔔`, {
             description: t.title,
           });
@@ -84,6 +86,7 @@ export function Dashboard({ user, onLogout }: Props) {
     updateTasks(next);
     const t = next.find((x) => x.id === id);
     if (t?.completed) {
+      playSuccessChime();
       toast.success(randomCheer());
       const s = bumpStreak();
       setStreak(s);

@@ -23,12 +23,12 @@ export function Login({ onLogin }: Props) {
       <div className="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-accent-glow/30 blur-3xl" />
 
       <div className="relative w-full max-w-md">
-        <div className="mb-8 text-center text-primary-foreground">
-          <div className="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm shadow-glow">
-            <Rocket className="h-8 w-8" />
+        <div className="mb-5 text-center text-primary-foreground">
+          <div className="mx-auto mb-2 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm shadow-glow">
+            <Rocket className="h-5 w-5" />
           </div>
-          <h1 className="text-4xl font-bold tracking-tight">Welcome to Agar Planner 🚀</h1>
-          <p className="mt-2 text-primary-foreground/80">
+          <h1 className="text-2xl font-bold tracking-tight">Welcome to Agar Planner 🚀</h1>
+          <p className="mt-1 text-sm text-primary-foreground/80">
             Your personal study companion
           </p>
         </div>

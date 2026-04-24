@@ -231,7 +231,14 @@ export function Dashboard({ user, onLogout }: Props) {
         {/* Tasks */}
         <section className="mt-8">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Today's Tasks</h2>
+            <h2 className="text-lg font-semibold">
+              Today's Tasks
+              {todays.length > 0 && (
+                <span className="ml-2 text-sm font-normal text-muted-foreground">
+                  ({pendingTasks.length} pending · {completedTasks.length} done)
+                </span>
+              )}
+            </h2>
             <AddTaskDialog subjects={subjects} onAdd={addTask} />
           </div>
 
@@ -244,16 +251,40 @@ export function Dashboard({ user, onLogout }: Props) {
               </p>
             </div>
           ) : (
-            <div className="space-y-2">
-              {todays.map((t) => (
-                <TaskItem
-                  key={t.id}
-                  task={t}
-                  subject={subjects.find((s) => s.id === t.subjectId)}
-                  onToggle={toggleTask}
-                  onDelete={deleteTask}
-                />
-              ))}
+            <div className="space-y-6">
+              {pendingTasks.length > 0 && (
+                <div className="space-y-2">
+                  {pendingTasks.map((t) => (
+                    <TaskItem
+                      key={t.id}
+                      task={t}
+                      subject={subjects.find((s) => s.id === t.subjectId)}
+                      onToggle={toggleTask}
+                      onDelete={deleteTask}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {completedTasks.length > 0 && (
+                <div>
+                  <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+                    <Check className="h-4 w-4 text-success" />
+                    Completed ({completedTasks.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {completedTasks.map((t) => (
+                      <TaskItem
+                        key={t.id}
+                        task={t}
+                        subject={subjects.find((s) => s.id === t.subjectId)}
+                        onToggle={toggleTask}
+                        onDelete={deleteTask}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </section>

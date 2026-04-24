@@ -17,13 +17,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus } from "lucide-react";
-import type { Subject, Task } from "@/lib/storage";
-import { todayKey } from "@/lib/storage";
+import { Plus, Loader2 } from "lucide-react";
+import type { Subject } from "@/lib/data";
 
 interface Props {
   subjects: Subject[];
-  onAdd: (task: Task) => void;
+  onAdd: (input: { title: string; subjectId: string; time?: string }) => Promise<void> | void;
 }
 
 export function AddTaskDialog({ subjects, onAdd }: Props) {
@@ -31,25 +30,29 @@ export function AddTaskDialog({ subjects, onAdd }: Props) {
   const [title, setTitle] = useState("");
   const [subjectId, setSubjectId] = useState(subjects[0]?.id ?? "");
   const [time, setTime] = useState("");
+  const [saving, setSaving] = useState(false);
 
-  const submit = () => {
-    if (!title.trim() || !subjectId) return;
-    onAdd({
-      id: crypto.randomUUID(),
-      title: title.trim(),
-      subjectId,
-      time: time || undefined,
-      completed: false,
-      date: todayKey(),
-      createdAt: Date.now(),
-    });
-    setTitle("");
-    setTime("");
-    setOpen(false);
+  const submit = async () => {
+    if (!title.trim() || !subjectId || saving) return;
+    setSaving(true);
+    try {
+      await onAdd({ title: title.trim(), subjectId, time: time || undefined });
+      setTitle("");
+      setTime("");
+      setOpen(false);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        setOpen(v);
+        if (v && !subjectId && subjects[0]) setSubjectId(subjects[0].id);
+      }}
+    >
       <DialogTrigger asChild>
         <Button size="lg" className="bg-gradient-primary shadow-elegant hover:opacity-90 transition-smooth">
           <Plus className="mr-2 h-4 w-4" /> Add Task
@@ -96,10 +99,11 @@ export function AddTaskDialog({ subjects, onAdd }: Props) {
           </div>
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={() => setOpen(false)}>
+          <Button variant="ghost" onClick={() => setOpen(false)} disabled={saving}>
             Cancel
           </Button>
-          <Button onClick={submit} className="bg-gradient-primary">
+          <Button onClick={submit} className="bg-gradient-primary" disabled={saving}>
+            {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             Add
           </Button>
         </DialogFooter>

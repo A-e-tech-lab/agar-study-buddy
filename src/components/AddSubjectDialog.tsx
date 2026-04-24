@@ -10,25 +10,30 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { BookPlus } from "lucide-react";
-import type { Subject } from "@/lib/storage";
+import { BookPlus, Loader2 } from "lucide-react";
 
 const COLORS = ["chart-1", "chart-2", "chart-3", "chart-4", "chart-5"];
 
 interface Props {
-  onAdd: (s: Subject) => void;
+  onAdd: (input: { name: string; color: string }) => Promise<void> | void;
 }
 
 export function AddSubjectDialog({ onAdd }: Props) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [color, setColor] = useState(COLORS[0]);
+  const [saving, setSaving] = useState(false);
 
-  const submit = () => {
-    if (!name.trim()) return;
-    onAdd({ id: crypto.randomUUID(), name: name.trim(), color });
-    setName("");
-    setOpen(false);
+  const submit = async () => {
+    if (!name.trim() || saving) return;
+    setSaving(true);
+    try {
+      await onAdd({ name: name.trim(), color });
+      setName("");
+      setOpen(false);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -59,6 +64,7 @@ export function AddSubjectDialog({ onAdd }: Props) {
               {COLORS.map((c) => (
                 <button
                   key={c}
+                  type="button"
                   onClick={() => setColor(c)}
                   className={`h-8 w-8 rounded-full transition-bounce ${
                     color === c ? "ring-2 ring-ring ring-offset-2" : ""
@@ -71,7 +77,8 @@ export function AddSubjectDialog({ onAdd }: Props) {
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={submit} className="bg-gradient-primary w-full">
+          <Button onClick={submit} className="bg-gradient-primary w-full" disabled={saving}>
+            {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             Add Subject
           </Button>
         </DialogFooter>

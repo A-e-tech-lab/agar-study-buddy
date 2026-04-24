@@ -220,7 +220,7 @@ export function Dashboard() {
       </header>
 
       {/* Content */}
-      <main className="mx-auto -mt-12 max-w-4xl px-6">
+      <main className="mx-auto mt-6 max-w-4xl px-6">
         {/* Progress card */}
         <div className="rounded-3xl border bg-card p-6 shadow-elegant">
           <div className="mb-4 flex items-center justify-between">

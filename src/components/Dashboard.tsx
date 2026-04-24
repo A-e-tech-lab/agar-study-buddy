@@ -181,38 +181,38 @@ export function Dashboard() {
   return (
     <div className="min-h-screen pb-12">
       {/* Header */}
-      <header className="relative overflow-hidden bg-gradient-hero pb-20 pt-10 text-primary-foreground">
-        <div className="absolute -top-20 right-0 h-72 w-72 rounded-full bg-accent-glow/20 blur-3xl" />
-        <div className="absolute -bottom-20 left-0 h-72 w-72 rounded-full bg-primary-glow/30 blur-3xl" />
+      <header className="relative overflow-hidden bg-gradient-hero pb-12 pt-5 text-primary-foreground">
+        <div className="absolute -top-20 right-0 h-56 w-56 rounded-full bg-accent-glow/20 blur-3xl" />
+        <div className="absolute -bottom-20 left-0 h-56 w-56 rounded-full bg-primary-glow/30 blur-3xl" />
 
         <div className="relative mx-auto max-w-4xl px-6">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-sm font-medium text-primary-foreground/80">{greeting},</p>
-              <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">
+              <p className="text-xs font-medium text-primary-foreground/80">{greeting},</p>
+              <h1 className="mt-0.5 text-xl font-bold tracking-tight sm:text-2xl">
                 {displayName ?? "Friend"} 👋
               </h1>
             </div>
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 backdrop-blur-sm">
-                <Flame className="h-4 w-4 text-accent-glow" />
-                <span className="text-sm font-semibold">{streak.count} day streak</span>
+              <div className="flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 backdrop-blur-sm">
+                <Flame className="h-3.5 w-3.5 text-accent-glow" />
+                <span className="text-xs font-semibold">{streak.count} day streak</span>
               </div>
               <Button
                 size="icon"
                 variant="ghost"
                 onClick={() => signOut()}
-                className="text-primary-foreground hover:bg-white/15"
+                className="h-8 w-8 text-primary-foreground hover:bg-white/15"
                 aria-label="Logout"
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-3.5 w-3.5" />
               </Button>
             </div>
           </div>
 
-          <div className="mt-6 flex items-start gap-3 rounded-2xl bg-white/10 p-4 backdrop-blur-sm">
-            <Quote className="mt-0.5 h-5 w-5 shrink-0 text-accent-glow" />
-            <p className="text-sm leading-relaxed text-primary-foreground/95">
+          <div className="mt-3 flex items-start gap-2 rounded-xl bg-white/10 p-3 backdrop-blur-sm">
+            <Quote className="mt-0.5 h-4 w-4 shrink-0 text-accent-glow" />
+            <p className="text-xs leading-relaxed text-primary-foreground/95">
               {dailyQuote()}
             </p>
           </div>

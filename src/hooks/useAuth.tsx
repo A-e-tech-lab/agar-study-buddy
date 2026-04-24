@@ -29,27 +29,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    let resolved = false;
+    const finish = () => {
+      if (!resolved) {
+        resolved = true;
+        setLoading(false);
+      }
+    };
+
     // Set up listener FIRST
     const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
       setUser(newSession?.user ?? null);
       if (newSession?.user) {
-        // Defer to avoid deadlocks
         setTimeout(() => fetchDisplayName(newSession.user.id), 0);
       } else {
         setDisplayName(null);
       }
+      finish();
     });
 
     // THEN check existing session
-    supabase.auth.getSession().then(({ data: { session: existing } }) => {
-      setSession(existing);
-      setUser(existing?.user ?? null);
-      if (existing?.user) fetchDisplayName(existing.user.id);
-      setLoading(false);
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data: { session: existing } }) => {
+        setSession(existing);
+        setUser(existing?.user ?? null);
+        if (existing?.user) fetchDisplayName(existing.user.id);
+      })
+      .finally(finish);
 
-    return () => sub.subscription.unsubscribe();
+    // Safety fallback in case neither resolves quickly
+    const timeout = setTimeout(finish, 3000);
+
+    return () => {
+      sub.subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   const signOut = async () => {

@@ -1,5 +1,5 @@
 import { Check, Clock, Trash2 } from "lucide-react";
-import type { Subject, Task } from "@/lib/storage";
+import type { Subject, Task } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 
 interface Props {

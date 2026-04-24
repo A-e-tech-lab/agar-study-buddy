@@ -2,39 +2,57 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   bumpStreak,
-  getStreak,
-  getSubjects,
-  getTasks,
-  setSubjects as saveSubjects,
-  setTasks as saveTasks,
+  createSubject,
+  createTask,
+  deleteTask as deleteTaskApi,
+  fetchStreak,
+  fetchSubjects,
+  fetchTodaysTasks,
+  setTaskCompleted,
   todayKey,
   type Subject,
   type Task,
-} from "@/lib/storage";
+} from "@/lib/data";
 import { dailyQuote, randomCheer } from "@/lib/quotes";
 import { playReminderChime, playSuccessChime, unlockAudio } from "@/lib/sound";
 import { AddTaskDialog } from "./AddTaskDialog";
 import { AddSubjectDialog } from "./AddSubjectDialog";
 import { TaskItem } from "./TaskItem";
 import { Button } from "@/components/ui/button";
-import { Flame, LogOut, Quote, Target, BookOpen, Check } from "lucide-react";
+import { Flame, LogOut, Quote, Target, BookOpen, Check, Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
-interface Props {
-  user: string;
-  onLogout: () => void;
-}
+export function Dashboard() {
+  const { user, displayName, signOut } = useAuth();
+  const userId = user!.id;
 
-export function Dashboard({ user, onLogout }: Props) {
-  const [subjects, setSubjectsState] = useState<Subject[]>([]);
-  const [tasks, setTasksState] = useState<Task[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [streak, setStreak] = useState({ count: 0, lastDate: null as string | null });
+  const [loading, setLoading] = useState(true);
 
+  // Initial load
   useEffect(() => {
-    setSubjectsState(getSubjects());
-    setTasksState(getTasks());
-    setStreak(getStreak());
+    let cancelled = false;
+    (async () => {
+      try {
+        const [subs, tks, str] = await Promise.all([
+          fetchSubjects(userId),
+          fetchTodaysTasks(userId),
+          fetchStreak(userId),
+        ]);
+        if (cancelled) return;
+        setSubjects(subs);
+        setTasks(tks);
+        setStreak(str);
+      } catch (err) {
+        toast.error("Failed to load your data");
+        console.error(err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
 
-    // Unlock Web Audio on first user interaction (required by browsers)
     const unlock = () => {
       unlockAudio();
       window.removeEventListener("pointerdown", unlock);
@@ -43,10 +61,11 @@ export function Dashboard({ user, onLogout }: Props) {
     window.addEventListener("pointerdown", unlock);
     window.addEventListener("keydown", unlock);
     return () => {
+      cancelled = true;
       window.removeEventListener("pointerdown", unlock);
       window.removeEventListener("keydown", unlock);
     };
-  }, []);
+  }, [userId]);
 
   // Reminder check every 30s
   useEffect(() => {
@@ -84,39 +103,58 @@ export function Dashboard({ user, onLogout }: Props) {
   const completed = completedTasks.length;
   const progress = todays.length ? Math.round((completed / todays.length) * 100) : 0;
 
-  const updateTasks = (next: Task[]) => {
-    setTasksState(next);
-    saveTasks(next);
-  };
-
-  const addTask = (t: Task) => {
-    updateTasks([t, ...tasks]);
-    toast.success("Task added");
-  };
-
-  const toggleTask = (id: string) => {
-    const next = tasks.map((t) =>
-      t.id === id ? { ...t, completed: !t.completed } : t
-    );
-    updateTasks(next);
-    const t = next.find((x) => x.id === id);
-    if (t?.completed) {
-      playSuccessChime();
-      toast.success(randomCheer());
-      const s = bumpStreak();
-      setStreak(s);
+  const handleAddTask = async (input: { title: string; subjectId: string; time?: string }) => {
+    try {
+      const created = await createTask(userId, input);
+      setTasks((prev) => [created, ...prev]);
+      toast.success("Task added");
+    } catch (err) {
+      toast.error("Could not add task");
+      console.error(err);
     }
   };
 
-  const deleteTask = (id: string) => {
-    updateTasks(tasks.filter((t) => t.id !== id));
+  const handleToggleTask = async (id: string) => {
+    const target = tasks.find((t) => t.id === id);
+    if (!target) return;
+    const newCompleted = !target.completed;
+    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, completed: newCompleted } : t)));
+    try {
+      await setTaskCompleted(id, newCompleted);
+      if (newCompleted) {
+        playSuccessChime();
+        toast.success(randomCheer());
+        const s = await bumpStreak(userId);
+        setStreak(s);
+      }
+    } catch (err) {
+      // revert
+      setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, completed: !newCompleted } : t)));
+      toast.error("Failed to update task");
+      console.error(err);
+    }
   };
 
-  const addSubject = (s: Subject) => {
-    const next = [...subjects, s];
-    setSubjectsState(next);
-    saveSubjects(next);
-    toast.success(`${s.name} added`);
+  const handleDeleteTask = async (id: string) => {
+    const prev = tasks;
+    setTasks((p) => p.filter((t) => t.id !== id));
+    try {
+      await deleteTaskApi(id);
+    } catch (err) {
+      setTasks(prev);
+      toast.error("Failed to delete task");
+    }
+  };
+
+  const handleAddSubject = async (input: { name: string; color: string }) => {
+    try {
+      const created = await createSubject(userId, input.name, input.color);
+      setSubjects((prev) => [...prev, created]);
+      toast.success(`${created.name} added`);
+    } catch (err) {
+      toast.error("Could not add subject");
+      console.error(err);
+    }
   };
 
   const subjectStats = subjects.map((s) => {
@@ -132,6 +170,14 @@ export function Dashboard({ user, onLogout }: Props) {
     return "Good evening";
   })();
 
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen pb-12">
       {/* Header */}
@@ -142,11 +188,9 @@ export function Dashboard({ user, onLogout }: Props) {
         <div className="relative mx-auto max-w-4xl px-6">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-sm font-medium text-primary-foreground/80">
-                {greeting},
-              </p>
+              <p className="text-sm font-medium text-primary-foreground/80">{greeting},</p>
               <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">
-                {user} 👋
+                {displayName ?? "Friend"} 👋
               </h1>
             </div>
             <div className="flex items-center gap-2">
@@ -157,7 +201,7 @@ export function Dashboard({ user, onLogout }: Props) {
               <Button
                 size="icon"
                 variant="ghost"
-                onClick={onLogout}
+                onClick={() => signOut()}
                 className="text-primary-foreground hover:bg-white/15"
                 aria-label="Logout"
               >
@@ -207,7 +251,7 @@ export function Dashboard({ user, onLogout }: Props) {
             <h2 className="flex items-center gap-2 text-lg font-semibold">
               <BookOpen className="h-5 w-5 text-primary" /> Subjects
             </h2>
-            <AddSubjectDialog onAdd={addSubject} />
+            <AddSubjectDialog onAdd={handleAddSubject} />
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
             {subjectStats.map((s) => (
@@ -239,7 +283,7 @@ export function Dashboard({ user, onLogout }: Props) {
                 </span>
               )}
             </h2>
-            <AddTaskDialog subjects={subjects} onAdd={addTask} />
+            <AddTaskDialog subjects={subjects} onAdd={handleAddTask} />
           </div>
 
           {todays.length === 0 ? (
@@ -259,8 +303,8 @@ export function Dashboard({ user, onLogout }: Props) {
                       key={t.id}
                       task={t}
                       subject={subjects.find((s) => s.id === t.subjectId)}
-                      onToggle={toggleTask}
-                      onDelete={deleteTask}
+                      onToggle={handleToggleTask}
+                      onDelete={handleDeleteTask}
                     />
                   ))}
                 </div>
@@ -278,8 +322,8 @@ export function Dashboard({ user, onLogout }: Props) {
                         key={t.id}
                         task={t}
                         subject={subjects.find((s) => s.id === t.subjectId)}
-                        onToggle={toggleTask}
-                        onDelete={deleteTask}
+                        onToggle={handleToggleTask}
+                        onDelete={handleDeleteTask}
                       />
                     ))}
                   </div>

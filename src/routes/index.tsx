@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { Login } from "@/components/Login";
 import { Dashboard } from "@/components/Dashboard";
-import { clearUser, getUser, setUser } from "@/lib/storage";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -25,36 +25,25 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
+function Gate() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  return user ? <Dashboard /> : <Login />;
+}
+
 function Index() {
-  const [user, setUserState] = useState<string | null>(null);
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    setUserState(getUser());
-    setReady(true);
-  }, []);
-
-  if (!ready) return null;
-
   return (
-    <>
-      {user ? (
-        <Dashboard
-          user={user}
-          onLogout={() => {
-            clearUser();
-            setUserState(null);
-          }}
-        />
-      ) : (
-        <Login
-          onLogin={(name) => {
-            setUser(name);
-            setUserState(name);
-          }}
-        />
-      )}
+    <AuthProvider>
+      <Gate />
       <Toaster position="top-center" richColors />
-    </>
+    </AuthProvider>
   );
 }

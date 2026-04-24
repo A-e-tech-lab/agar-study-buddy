@@ -17,7 +17,7 @@ import { AddTaskDialog } from "./AddTaskDialog";
 import { AddSubjectDialog } from "./AddSubjectDialog";
 import { TaskItem } from "./TaskItem";
 import { Button } from "@/components/ui/button";
-import { Flame, LogOut, Quote, Target, BookOpen } from "lucide-react";
+import { Flame, LogOut, Quote, Target, BookOpen, Check } from "lucide-react";
 
 interface Props {
   user: string;

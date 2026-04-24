@@ -79,7 +79,9 @@ export function Dashboard({ user, onLogout }: Props) {
     () => tasks.filter((t) => t.date === todayKey()),
     [tasks]
   );
-  const completed = todays.filter((t) => t.completed).length;
+  const pendingTasks = todays.filter((t) => !t.completed);
+  const completedTasks = todays.filter((t) => t.completed);
+  const completed = completedTasks.length;
   const progress = todays.length ? Math.round((completed / todays.length) * 100) : 0;
 
   const updateTasks = (next: Task[]) => {

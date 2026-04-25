@@ -111,6 +111,39 @@ export function Dashboard() {
     return () => clearInterval(id);
   }, [tasks, subjects]);
 
+  // Reminder dispatcher (browser notifications) every 30s
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date();
+      const hhmm = now.toTimeString().slice(0, 5);
+      const today = todayKey();
+      reminders.forEach((r) => {
+        if (!r.enabled || !r.notifyBrowser) return;
+        if (r.remindTime !== hhmm) return;
+        if (r.recurrence === "once" && r.remindDate !== today) return;
+        if (r.lastSentDate === today) return;
+
+        playReminderChime();
+        toast(`🔔 ${r.title}`, { description: r.message ?? "Reminder" });
+        if ("Notification" in window && Notification.permission === "granted") {
+          try {
+            new Notification(r.title, { body: r.message ?? "Reminder", tag: r.id });
+          } catch {
+            // ignore — some browsers throw outside a service worker
+          }
+        }
+        // Mark sent locally + persist so we don't refire today
+        setReminders((prev) =>
+          prev.map((x) => (x.id === r.id ? { ...x, lastSentDate: today } : x))
+        );
+        markReminderSent(r.id, today).catch(() => {});
+      });
+    };
+    const id = setInterval(tick, 30000);
+    tick();
+    return () => clearInterval(id);
+  }, [reminders]);
+
   const todays = useMemo(
     () => tasks.filter((t) => t.date === todayKey()),
     [tasks]

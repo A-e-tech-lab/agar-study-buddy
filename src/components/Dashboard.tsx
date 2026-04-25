@@ -207,7 +207,37 @@ export function Dashboard() {
     }
   };
 
-  const subjectStats = subjects.map((s) => {
+  const handleCreateReminder = async (input: Parameters<typeof createReminder>[1]) => {
+    try {
+      const created = await createReminder(userId, input);
+      setReminders((prev) => [...prev, created].sort((a, b) => a.remindTime.localeCompare(b.remindTime)));
+      toast.success("Reminder created");
+    } catch (err) {
+      toast.error("Could not create reminder");
+      console.error(err);
+    }
+  };
+
+  const handleToggleReminder = async (id: string, enabled: boolean) => {
+    setReminders((prev) => prev.map((r) => (r.id === id ? { ...r, enabled } : r)));
+    try {
+      await toggleReminder(id, enabled);
+    } catch (err) {
+      setReminders((prev) => prev.map((r) => (r.id === id ? { ...r, enabled: !enabled } : r)));
+      toast.error("Failed to update reminder");
+    }
+  };
+
+  const handleDeleteReminder = async (id: string) => {
+    const prev = reminders;
+    setReminders((p) => p.filter((r) => r.id !== id));
+    try {
+      await deleteReminderApi(id);
+    } catch (err) {
+      setReminders(prev);
+      toast.error("Failed to delete reminder");
+    }
+  };
     const list = todays.filter((t) => t.subjectId === s.id);
     const done = list.filter((t) => t.completed).length;
     return { ...s, total: list.length, done };

@@ -9,8 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MemoriesRouteImport } from './routes/memories'
+import { Route as FriendsRouteImport } from './routes/friends'
+import { Route as FocusRouteImport } from './routes/focus'
 import { Route as IndexRouteImport } from './routes/index'
 
+const MemoriesRoute = MemoriesRouteImport.update({
+  id: '/memories',
+  path: '/memories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FriendsRoute = FriendsRouteImport.update({
+  id: '/friends',
+  path: '/friends',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FocusRoute = FocusRouteImport.update({
+  id: '/focus',
+  path: '/focus',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +37,61 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/focus': typeof FocusRoute
+  '/friends': typeof FriendsRoute
+  '/memories': typeof MemoriesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/focus': typeof FocusRoute
+  '/friends': typeof FriendsRoute
+  '/memories': typeof MemoriesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/focus': typeof FocusRoute
+  '/friends': typeof FriendsRoute
+  '/memories': typeof MemoriesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/focus' | '/friends' | '/memories'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/focus' | '/friends' | '/memories'
+  id: '__root__' | '/' | '/focus' | '/friends' | '/memories'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FocusRoute: typeof FocusRoute
+  FriendsRoute: typeof FriendsRoute
+  MemoriesRoute: typeof MemoriesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/memories': {
+      id: '/memories'
+      path: '/memories'
+      fullPath: '/memories'
+      preLoaderRoute: typeof MemoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/friends': {
+      id: '/friends'
+      path: '/friends'
+      fullPath: '/friends'
+      preLoaderRoute: typeof FriendsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/focus': {
+      id: '/focus'
+      path: '/focus'
+      fullPath: '/focus'
+      preLoaderRoute: typeof FocusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +104,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FocusRoute: FocusRoute,
+  FriendsRoute: FriendsRoute,
+  MemoriesRoute: MemoriesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

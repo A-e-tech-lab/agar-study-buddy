@@ -299,6 +299,27 @@ export function Dashboard() {
               {dailyQuote()}
             </p>
           </div>
+
+          <nav className="mt-3 flex flex-wrap gap-2">
+            <Link
+              to="/focus"
+              className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold backdrop-blur-sm transition-smooth hover:bg-white/25"
+            >
+              <Headphones className="h-3.5 w-3.5" /> Focus
+            </Link>
+            <Link
+              to="/friends"
+              className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold backdrop-blur-sm transition-smooth hover:bg-white/25"
+            >
+              <Users className="h-3.5 w-3.5" /> Friends
+            </Link>
+            <Link
+              to="/memories"
+              className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold backdrop-blur-sm transition-smooth hover:bg-white/25"
+            >
+              <ImageIcon className="h-3.5 w-3.5" /> Memories
+            </Link>
+          </nav>
         </div>
       </header>
 

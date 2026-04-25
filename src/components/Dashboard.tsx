@@ -15,11 +15,21 @@ import {
 } from "@/lib/data";
 import { dailyQuote, randomCheer } from "@/lib/quotes";
 import { playReminderChime, playSuccessChime, unlockAudio } from "@/lib/sound";
+import {
+  createReminder,
+  deleteReminder as deleteReminderApi,
+  fetchReminders,
+  markReminderSent,
+  toggleReminder,
+  type Reminder,
+} from "@/lib/reminders";
 import { AddTaskDialog } from "./AddTaskDialog";
 import { AddSubjectDialog } from "./AddSubjectDialog";
 import { TaskItem } from "./TaskItem";
+import { CreateReminderDialog } from "./CreateReminderDialog";
+import { ReminderItem } from "./ReminderItem";
 import { Button } from "@/components/ui/button";
-import { Flame, LogOut, Quote, Target, BookOpen, Check, Loader2 } from "lucide-react";
+import { Bell, Flame, LogOut, Quote, Target, BookOpen, Check, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 export function Dashboard() {
@@ -28,6 +38,7 @@ export function Dashboard() {
 
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [reminders, setReminders] = useState<Reminder[]>([]);
   const [streak, setStreak] = useState({ count: 0, lastDate: null as string | null });
   const [loading, setLoading] = useState(true);
 
@@ -36,11 +47,17 @@ export function Dashboard() {
     let cancelled = false;
     (async () => {
       try {
-        const [subs, tks, str] = await Promise.all([
+        const [subs, tks, str, rems] = await Promise.all([
           fetchSubjects(userId),
           fetchTodaysTasks(userId),
           fetchStreak(userId),
+          fetchReminders(userId),
         ]);
+        if (cancelled) return;
+        setSubjects(subs);
+        setTasks(tks);
+        setStreak(str);
+        setReminders(rems);
         if (cancelled) return;
         setSubjects(subs);
         setTasks(tks);
@@ -93,6 +110,39 @@ export function Dashboard() {
     tick();
     return () => clearInterval(id);
   }, [tasks, subjects]);
+
+  // Reminder dispatcher (browser notifications) every 30s
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date();
+      const hhmm = now.toTimeString().slice(0, 5);
+      const today = todayKey();
+      reminders.forEach((r) => {
+        if (!r.enabled || !r.notifyBrowser) return;
+        if (r.remindTime !== hhmm) return;
+        if (r.recurrence === "once" && r.remindDate !== today) return;
+        if (r.lastSentDate === today) return;
+
+        playReminderChime();
+        toast(`🔔 ${r.title}`, { description: r.message ?? "Reminder" });
+        if ("Notification" in window && Notification.permission === "granted") {
+          try {
+            new Notification(r.title, { body: r.message ?? "Reminder", tag: r.id });
+          } catch {
+            // ignore — some browsers throw outside a service worker
+          }
+        }
+        // Mark sent locally + persist so we don't refire today
+        setReminders((prev) =>
+          prev.map((x) => (x.id === r.id ? { ...x, lastSentDate: today } : x))
+        );
+        markReminderSent(r.id, today).catch(() => {});
+      });
+    };
+    const id = setInterval(tick, 30000);
+    tick();
+    return () => clearInterval(id);
+  }, [reminders]);
 
   const todays = useMemo(
     () => tasks.filter((t) => t.date === todayKey()),
@@ -154,6 +204,38 @@ export function Dashboard() {
     } catch (err) {
       toast.error("Could not add subject");
       console.error(err);
+    }
+  };
+
+  const handleCreateReminder = async (input: Parameters<typeof createReminder>[1]) => {
+    try {
+      const created = await createReminder(userId, input);
+      setReminders((prev) => [...prev, created].sort((a, b) => a.remindTime.localeCompare(b.remindTime)));
+      toast.success("Reminder created");
+    } catch (err) {
+      toast.error("Could not create reminder");
+      console.error(err);
+    }
+  };
+
+  const handleToggleReminder = async (id: string, enabled: boolean) => {
+    setReminders((prev) => prev.map((r) => (r.id === id ? { ...r, enabled } : r)));
+    try {
+      await toggleReminder(id, enabled);
+    } catch (err) {
+      setReminders((prev) => prev.map((r) => (r.id === id ? { ...r, enabled: !enabled } : r)));
+      toast.error("Failed to update reminder");
+    }
+  };
+
+  const handleDeleteReminder = async (id: string) => {
+    const prev = reminders;
+    setReminders((p) => p.filter((r) => r.id !== id));
+    try {
+      await deleteReminderApi(id);
+    } catch (err) {
+      setReminders(prev);
+      toast.error("Failed to delete reminder");
     }
   };
 
@@ -329,6 +411,42 @@ export function Dashboard() {
                   </div>
                 </div>
               )}
+            </div>
+          )}
+        </section>
+
+        {/* Reminders */}
+        <section className="mt-8">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="flex items-center gap-2 text-lg font-semibold">
+              <Bell className="h-5 w-5 text-primary" /> Reminders
+              {reminders.length > 0 && (
+                <span className="ml-1 text-sm font-normal text-muted-foreground">
+                  ({reminders.filter((r) => r.enabled).length} active)
+                </span>
+              )}
+            </h2>
+            <CreateReminderDialog onCreate={handleCreateReminder} />
+          </div>
+
+          {reminders.length === 0 ? (
+            <div className="rounded-3xl border border-dashed bg-card/50 p-8 text-center">
+              <p className="text-3xl">🔔</p>
+              <p className="mt-2 font-semibold">No reminders yet</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Create a daily nudge so you never miss a study session.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {reminders.map((r) => (
+                <ReminderItem
+                  key={r.id}
+                  reminder={r}
+                  onToggle={handleToggleReminder}
+                  onDelete={handleDeleteReminder}
+                />
+              ))}
             </div>
           )}
         </section>

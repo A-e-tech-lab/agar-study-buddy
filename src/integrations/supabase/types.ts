@@ -38,6 +38,54 @@ export type Database = {
         }
         Relationships: []
       }
+      reminders: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: string
+          last_sent_date: string | null
+          message: string | null
+          notify_browser: boolean
+          notify_email: boolean
+          recurrence: string
+          remind_date: string | null
+          remind_time: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          last_sent_date?: string | null
+          message?: string | null
+          notify_browser?: boolean
+          notify_email?: boolean
+          recurrence?: string
+          remind_date?: string | null
+          remind_time: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          last_sent_date?: string | null
+          message?: string | null
+          notify_browser?: boolean
+          notify_email?: boolean
+          recurrence?: string
+          remind_date?: string | null
+          remind_time?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       streaks: {
         Row: {
           count: number

@@ -414,6 +414,42 @@ export function Dashboard() {
             </div>
           )}
         </section>
+
+        {/* Reminders */}
+        <section className="mt-8">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="flex items-center gap-2 text-lg font-semibold">
+              <Bell className="h-5 w-5 text-primary" /> Reminders
+              {reminders.length > 0 && (
+                <span className="ml-1 text-sm font-normal text-muted-foreground">
+                  ({reminders.filter((r) => r.enabled).length} active)
+                </span>
+              )}
+            </h2>
+            <CreateReminderDialog onCreate={handleCreateReminder} />
+          </div>
+
+          {reminders.length === 0 ? (
+            <div className="rounded-3xl border border-dashed bg-card/50 p-8 text-center">
+              <p className="text-3xl">🔔</p>
+              <p className="mt-2 font-semibold">No reminders yet</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Create a daily nudge so you never miss a study session.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {reminders.map((r) => (
+                <ReminderItem
+                  key={r.id}
+                  reminder={r}
+                  onToggle={handleToggleReminder}
+                  onDelete={handleDeleteReminder}
+                />
+              ))}
+            </div>
+          )}
+        </section>
       </main>
     </div>
   );

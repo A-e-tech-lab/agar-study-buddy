@@ -238,6 +238,8 @@ export function Dashboard() {
       toast.error("Failed to delete reminder");
     }
   };
+
+  const subjectStats = subjects.map((s) => {
     const list = todays.filter((t) => t.subjectId === s.id);
     const done = list.filter((t) => t.completed).length;
     return { ...s, total: list.length, done };

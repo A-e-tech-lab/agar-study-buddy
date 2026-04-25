@@ -1,9 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
-import { Toaster } from "@/components/ui/sonner";
 import { Login } from "@/components/Login";
 import { Dashboard } from "@/components/Dashboard";
-import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -25,7 +24,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-function Gate() {
+function Index() {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -37,13 +36,4 @@ function Gate() {
   }
 
   return user ? <Dashboard /> : <Login />;
-}
-
-function Index() {
-  return (
-    <AuthProvider>
-      <Gate />
-      <Toaster position="top-center" richColors />
-    </AuthProvider>
-  );
 }

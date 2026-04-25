@@ -38,6 +38,7 @@ export function Dashboard() {
 
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [reminders, setReminders] = useState<Reminder[]>([]);
   const [streak, setStreak] = useState({ count: 0, lastDate: null as string | null });
   const [loading, setLoading] = useState(true);
 
@@ -46,11 +47,17 @@ export function Dashboard() {
     let cancelled = false;
     (async () => {
       try {
-        const [subs, tks, str] = await Promise.all([
+        const [subs, tks, str, rems] = await Promise.all([
           fetchSubjects(userId),
           fetchTodaysTasks(userId),
           fetchStreak(userId),
+          fetchReminders(userId),
         ]);
+        if (cancelled) return;
+        setSubjects(subs);
+        setTasks(tks);
+        setStreak(str);
+        setReminders(rems);
         if (cancelled) return;
         setSubjects(subs);
         setTasks(tks);

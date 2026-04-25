@@ -15,11 +15,21 @@ import {
 } from "@/lib/data";
 import { dailyQuote, randomCheer } from "@/lib/quotes";
 import { playReminderChime, playSuccessChime, unlockAudio } from "@/lib/sound";
+import {
+  createReminder,
+  deleteReminder as deleteReminderApi,
+  fetchReminders,
+  markReminderSent,
+  toggleReminder,
+  type Reminder,
+} from "@/lib/reminders";
 import { AddTaskDialog } from "./AddTaskDialog";
 import { AddSubjectDialog } from "./AddSubjectDialog";
 import { TaskItem } from "./TaskItem";
+import { CreateReminderDialog } from "./CreateReminderDialog";
+import { ReminderItem } from "./ReminderItem";
 import { Button } from "@/components/ui/button";
-import { Flame, LogOut, Quote, Target, BookOpen, Check, Loader2 } from "lucide-react";
+import { Bell, Flame, LogOut, Quote, Target, BookOpen, Check, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 export function Dashboard() {

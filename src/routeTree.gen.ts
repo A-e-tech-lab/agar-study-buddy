@@ -9,11 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SquadsRouteImport } from './routes/squads'
 import { Route as MemoriesRouteImport } from './routes/memories'
 import { Route as FriendsRouteImport } from './routes/friends'
 import { Route as FocusRouteImport } from './routes/focus'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SquadsGroupIdRouteImport } from './routes/squads.$groupId'
+import { Route as JoinTokenRouteImport } from './routes/join.$token'
 
+const SquadsRoute = SquadsRouteImport.update({
+  id: '/squads',
+  path: '/squads',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MemoriesRoute = MemoriesRouteImport.update({
   id: '/memories',
   path: '/memories',
@@ -34,18 +42,34 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SquadsGroupIdRoute = SquadsGroupIdRouteImport.update({
+  id: '/$groupId',
+  path: '/$groupId',
+  getParentRoute: () => SquadsRoute,
+} as any)
+const JoinTokenRoute = JoinTokenRouteImport.update({
+  id: '/join/$token',
+  path: '/join/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/focus': typeof FocusRoute
   '/friends': typeof FriendsRoute
   '/memories': typeof MemoriesRoute
+  '/squads': typeof SquadsRouteWithChildren
+  '/join/$token': typeof JoinTokenRoute
+  '/squads/$groupId': typeof SquadsGroupIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/focus': typeof FocusRoute
   '/friends': typeof FriendsRoute
   '/memories': typeof MemoriesRoute
+  '/squads': typeof SquadsRouteWithChildren
+  '/join/$token': typeof JoinTokenRoute
+  '/squads/$groupId': typeof SquadsGroupIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +77,38 @@ export interface FileRoutesById {
   '/focus': typeof FocusRoute
   '/friends': typeof FriendsRoute
   '/memories': typeof MemoriesRoute
+  '/squads': typeof SquadsRouteWithChildren
+  '/join/$token': typeof JoinTokenRoute
+  '/squads/$groupId': typeof SquadsGroupIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/focus' | '/friends' | '/memories'
+  fullPaths:
+    | '/'
+    | '/focus'
+    | '/friends'
+    | '/memories'
+    | '/squads'
+    | '/join/$token'
+    | '/squads/$groupId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/focus' | '/friends' | '/memories'
-  id: '__root__' | '/' | '/focus' | '/friends' | '/memories'
+  to:
+    | '/'
+    | '/focus'
+    | '/friends'
+    | '/memories'
+    | '/squads'
+    | '/join/$token'
+    | '/squads/$groupId'
+  id:
+    | '__root__'
+    | '/'
+    | '/focus'
+    | '/friends'
+    | '/memories'
+    | '/squads'
+    | '/join/$token'
+    | '/squads/$groupId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,10 +116,19 @@ export interface RootRouteChildren {
   FocusRoute: typeof FocusRoute
   FriendsRoute: typeof FriendsRoute
   MemoriesRoute: typeof MemoriesRoute
+  SquadsRoute: typeof SquadsRouteWithChildren
+  JoinTokenRoute: typeof JoinTokenRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/squads': {
+      id: '/squads'
+      path: '/squads'
+      fullPath: '/squads'
+      preLoaderRoute: typeof SquadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/memories': {
       id: '/memories'
       path: '/memories'
@@ -99,14 +157,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/squads/$groupId': {
+      id: '/squads/$groupId'
+      path: '/$groupId'
+      fullPath: '/squads/$groupId'
+      preLoaderRoute: typeof SquadsGroupIdRouteImport
+      parentRoute: typeof SquadsRoute
+    }
+    '/join/$token': {
+      id: '/join/$token'
+      path: '/join/$token'
+      fullPath: '/join/$token'
+      preLoaderRoute: typeof JoinTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
+
+interface SquadsRouteChildren {
+  SquadsGroupIdRoute: typeof SquadsGroupIdRoute
+}
+
+const SquadsRouteChildren: SquadsRouteChildren = {
+  SquadsGroupIdRoute: SquadsGroupIdRoute,
+}
+
+const SquadsRouteWithChildren =
+  SquadsRoute._addFileChildren(SquadsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FocusRoute: FocusRoute,
   FriendsRoute: FriendsRoute,
   MemoriesRoute: MemoriesRoute,
+  SquadsRoute: SquadsRouteWithChildren,
+  JoinTokenRoute: JoinTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

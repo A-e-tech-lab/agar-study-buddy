@@ -29,9 +29,10 @@ import { TaskItem } from "./TaskItem";
 import { CreateReminderDialog } from "./CreateReminderDialog";
 import { ReminderItem } from "./ReminderItem";
 import { Button } from "@/components/ui/button";
-import { Bell, Flame, Headphones, Image as ImageIcon, LogOut, Quote, Target, BookOpen, Check, Loader2, Users } from "lucide-react";
+import { Bell, Flame, Headphones, Image as ImageIcon, LogOut, Quote, Target, BookOpen, Check, Loader2, Users, UserPlus2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
+import { setPresence } from "@/lib/squads";
 
 export function Dashboard() {
   const { user, displayName, signOut } = useAuth();
@@ -111,6 +112,32 @@ export function Dashboard() {
     tick();
     return () => clearInterval(id);
   }, [tasks, subjects]);
+
+  // Presence heartbeat — mark "studying" while tab is visible & focused
+  useEffect(() => {
+    let cancelled = false;
+    const beat = () => {
+      if (cancelled) return;
+      const visible = typeof document !== "undefined" && document.visibilityState === "visible";
+      setPresence(userId, visible ? "studying" : "break").catch(() => {});
+    };
+    beat();
+    const id = setInterval(beat, 60_000);
+    const onVis = () => beat();
+    const onUnload = () => {
+      // best-effort offline mark
+      setPresence(userId, "offline").catch(() => {});
+    };
+    document.addEventListener("visibilitychange", onVis);
+    window.addEventListener("beforeunload", onUnload);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", onVis);
+      window.removeEventListener("beforeunload", onUnload);
+      setPresence(userId, "offline").catch(() => {});
+    };
+  }, [userId]);
 
   // Reminder dispatcher (browser notifications) every 30s
   useEffect(() => {
@@ -312,6 +339,12 @@ export function Dashboard() {
               className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold backdrop-blur-sm transition-smooth hover:bg-white/25"
             >
               <Users className="h-3.5 w-3.5" /> Friends
+            </Link>
+            <Link
+              to="/squads"
+              className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold backdrop-blur-sm transition-smooth hover:bg-white/25"
+            >
+              <UserPlus2 className="h-3.5 w-3.5" /> Squads
             </Link>
             <Link
               to="/memories"

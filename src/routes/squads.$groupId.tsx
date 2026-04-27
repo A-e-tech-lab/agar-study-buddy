@@ -19,7 +19,6 @@ import {
   deleteGroup,
   fetchGroup,
   fetchMembersWithStats,
-  joinGroup,
   leaveGroup,
   type GroupMember,
   type StudyGroup,

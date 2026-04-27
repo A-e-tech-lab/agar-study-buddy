@@ -154,7 +154,7 @@ function SquadDetailPage() {
     s === "studying"
       ? "bg-success"
       : s === "break"
-        ? "bg-warning"
+        ? "bg-accent"
         : "bg-muted-foreground/40";
 
   const statusLabel = (s: GroupMember["status"]) =>
@@ -309,7 +309,7 @@ function SquadDetailPage() {
           </h2>
           <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-success" /> Studying</span>
-            <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-warning" /> Break</span>
+            <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-accent" /> Break</span>
             <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-muted-foreground/40" /> Offline</span>
           </div>
         </section>

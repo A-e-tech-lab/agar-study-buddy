@@ -83,6 +83,38 @@ export type Database = {
         }
         Relationships: []
       }
+      group_members: {
+        Row: {
+          group_id: string
+          id: string
+          joined_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "study_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       memories: {
         Row: {
           caption: string | null
@@ -221,6 +253,33 @@ export type Database = {
         }
         Relationships: []
       }
+      study_groups: {
+        Row: {
+          created_at: string
+          id: string
+          invite_token: string
+          name: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invite_token: string
+          name: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invite_token?: string
+          name?: string
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       subjects: {
         Row: {
           color: string
@@ -286,12 +345,36 @@ export type Database = {
           },
         ]
       }
+      user_presence: {
+        Row: {
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       generate_friend_code: { Args: never; Returns: string }
+      generate_invite_token: { Args: never; Returns: string }
+      is_group_member: {
+        Args: { _group_id: string; _user_id: string }
+        Returns: boolean
+      }
+      shared_group_user_ids: { Args: { _user_id: string }; Returns: string[] }
     }
     Enums: {
       friendship_status: "pending" | "accepted"

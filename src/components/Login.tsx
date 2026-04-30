@@ -101,26 +101,36 @@ export function Login() {
           onSubmit={submit}
           className="rounded-3xl border bg-card/95 p-8 shadow-elegant backdrop-blur-xl"
         >
-          <div className="mb-4 flex rounded-lg bg-muted p-1 text-sm">
+          {mode !== "forgot" ? (
+            <div className="mb-4 flex rounded-lg bg-muted p-1 text-sm">
+              <button
+                type="button"
+                onClick={() => setMode("signin")}
+                className={`flex-1 rounded-md py-1.5 font-medium transition-colors ${
+                  mode === "signin" ? "bg-card shadow-sm" : "text-muted-foreground"
+                }`}
+              >
+                Sign In
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode("signup")}
+                className={`flex-1 rounded-md py-1.5 font-medium transition-colors ${
+                  mode === "signup" ? "bg-card shadow-sm" : "text-muted-foreground"
+                }`}
+              >
+                Sign Up
+              </button>
+            </div>
+          ) : (
             <button
               type="button"
               onClick={() => setMode("signin")}
-              className={`flex-1 rounded-md py-1.5 font-medium transition-colors ${
-                mode === "signin" ? "bg-card shadow-sm" : "text-muted-foreground"
-              }`}
+              className="mb-3 inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
             >
-              Sign In
+              <ArrowLeft className="h-3 w-3" /> Back to sign in
             </button>
-            <button
-              type="button"
-              onClick={() => setMode("signup")}
-              className={`flex-1 rounded-md py-1.5 font-medium transition-colors ${
-                mode === "signup" ? "bg-card shadow-sm" : "text-muted-foreground"
-              }`}
-            >
-              Sign Up
-            </button>
-          </div>
+          )}
 
           {mode === "signup" && (
             <div className="mb-3 space-y-2">
@@ -150,20 +160,33 @@ export function Login() {
             />
           </div>
 
-          <div className="mt-3 space-y-2">
-            <Label htmlFor="password" className="text-sm">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="h-9 text-sm"
-              disabled={loading}
-              minLength={6}
-              required
-            />
-          </div>
+          {mode !== "forgot" && (
+            <div className="mt-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password" className="text-sm">Password</Label>
+                {mode === "signin" && (
+                  <button
+                    type="button"
+                    onClick={() => setMode("forgot")}
+                    className="text-xs font-medium text-primary hover:underline"
+                  >
+                    Forgot password?
+                  </button>
+                )}
+              </div>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="h-9 text-sm"
+                disabled={loading}
+                minLength={6}
+                required
+              />
+            </div>
+          )}
 
           <Button
             type="submit"
@@ -173,12 +196,12 @@ export function Login() {
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {mode === "signup" ? "Creating account..." : "Signing you in..."}
+                {mode === "signup" ? "Creating account..." : mode === "forgot" ? "Sending link..." : "Signing you in..."}
               </>
             ) : (
               <>
                 <Sparkles className="mr-2 h-4 w-4" />
-                {mode === "signup" ? "Create Account" : "Start Studying"}
+                {mode === "signup" ? "Create Account" : mode === "forgot" ? "Send reset link" : "Start Studying"}
               </>
             )}
           </Button>

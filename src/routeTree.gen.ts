@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SquadsRouteImport } from './routes/squads'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as MentorRouteImport } from './routes/mentor'
 import { Route as MemoriesRouteImport } from './routes/memories'
 import { Route as FriendsRouteImport } from './routes/friends'
 import { Route as FocusRouteImport } from './routes/focus'
@@ -26,6 +27,11 @@ const SquadsRoute = SquadsRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MentorRoute = MentorRouteImport.update({
+  id: '/mentor',
+  path: '/mentor',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MemoriesRoute = MemoriesRouteImport.update({
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/focus': typeof FocusRoute
   '/friends': typeof FriendsRoute
   '/memories': typeof MemoriesRoute
+  '/mentor': typeof MentorRoute
   '/reset-password': typeof ResetPasswordRoute
   '/squads': typeof SquadsRouteWithChildren
   '/join/$token': typeof JoinTokenRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/focus': typeof FocusRoute
   '/friends': typeof FriendsRoute
   '/memories': typeof MemoriesRoute
+  '/mentor': typeof MentorRoute
   '/reset-password': typeof ResetPasswordRoute
   '/squads': typeof SquadsRouteWithChildren
   '/join/$token': typeof JoinTokenRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/focus': typeof FocusRoute
   '/friends': typeof FriendsRoute
   '/memories': typeof MemoriesRoute
+  '/mentor': typeof MentorRoute
   '/reset-password': typeof ResetPasswordRoute
   '/squads': typeof SquadsRouteWithChildren
   '/join/$token': typeof JoinTokenRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/focus'
     | '/friends'
     | '/memories'
+    | '/mentor'
     | '/reset-password'
     | '/squads'
     | '/join/$token'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/focus'
     | '/friends'
     | '/memories'
+    | '/mentor'
     | '/reset-password'
     | '/squads'
     | '/join/$token'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/focus'
     | '/friends'
     | '/memories'
+    | '/mentor'
     | '/reset-password'
     | '/squads'
     | '/join/$token'
@@ -128,6 +140,7 @@ export interface RootRouteChildren {
   FocusRoute: typeof FocusRoute
   FriendsRoute: typeof FriendsRoute
   MemoriesRoute: typeof MemoriesRoute
+  MentorRoute: typeof MentorRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SquadsRoute: typeof SquadsRouteWithChildren
   JoinTokenRoute: typeof JoinTokenRoute
@@ -147,6 +160,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mentor': {
+      id: '/mentor'
+      path: '/mentor'
+      fullPath: '/mentor'
+      preLoaderRoute: typeof MentorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/memories': {
@@ -210,6 +230,7 @@ const rootRouteChildren: RootRouteChildren = {
   FocusRoute: FocusRoute,
   FriendsRoute: FriendsRoute,
   MemoriesRoute: MemoriesRoute,
+  MentorRoute: MentorRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SquadsRoute: SquadsRouteWithChildren,
   JoinTokenRoute: JoinTokenRoute,

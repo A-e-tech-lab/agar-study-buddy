@@ -299,8 +299,17 @@ export function Dashboard() {
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-xs font-medium text-primary-foreground/80">{greeting},</p>
-              <h1 className="mt-0.5 text-xl font-bold tracking-tight sm:text-2xl">
-                {displayName ?? "Friend"} 👋
+              <h1 className="mt-0.5 flex items-center gap-1.5 text-xl font-bold tracking-tight sm:text-2xl">
+                <span>{displayName ?? "Friend"} 👋</span>
+                {user?.email_confirmed_at && (
+                  <span
+                    title="Verified user"
+                    className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold backdrop-blur-sm"
+                  >
+                    <BadgeCheck className="h-3 w-3" />
+                    Verified
+                  </span>
+                )}
               </h1>
             </div>
             <div className="flex items-center gap-2">

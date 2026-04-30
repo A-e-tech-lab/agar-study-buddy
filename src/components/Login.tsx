@@ -39,14 +39,26 @@ export function Login() {
         if (error) {
           toast.error(error.message);
         } else {
-          toast.success("Welcome aboard! 🎉");
+          toast.success("Welcome aboard! Check your email to verify. 🎉");
         }
-      } else {
+      } else if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({
           email: email.trim(),
           password,
         });
         if (error) toast.error(error.message);
+      } else {
+        // forgot password
+        if (!email.trim()) {
+          toast.error("Enter your email first");
+          setLoading(false);
+          return;
+        }
+        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) toast.error(error.message);
+        else toast.success("Reset link sent! Check your inbox 📧");
       }
     } finally {
       setLoading(false);

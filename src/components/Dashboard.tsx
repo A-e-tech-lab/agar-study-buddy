@@ -29,7 +29,7 @@ import { TaskItem } from "./TaskItem";
 import { CreateReminderDialog } from "./CreateReminderDialog";
 import { ReminderItem } from "./ReminderItem";
 import { Button } from "@/components/ui/button";
-import { Bell, Flame, Headphones, Image as ImageIcon, LogOut, Quote, Target, BookOpen, Check, Loader2, Users, UserPlus2, BadgeCheck } from "lucide-react";
+import { Bell, Flame, Headphones, Image as ImageIcon, LogOut, Quote, Target, BookOpen, Check, Loader2, Users, UserPlus2, BadgeCheck, Sparkles } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { setPresence } from "@/lib/squads";
@@ -360,6 +360,12 @@ export function Dashboard() {
               className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold backdrop-blur-sm transition-smooth hover:bg-white/25"
             >
               <ImageIcon className="h-3.5 w-3.5" /> Memories
+            </Link>
+            <Link
+              to="/mentor"
+              className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold backdrop-blur-sm transition-smooth hover:bg-white/25"
+            >
+              <Sparkles className="h-3.5 w-3.5" /> AI Mentor
             </Link>
           </nav>
         </div>

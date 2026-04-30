@@ -29,7 +29,7 @@ import { TaskItem } from "./TaskItem";
 import { CreateReminderDialog } from "./CreateReminderDialog";
 import { ReminderItem } from "./ReminderItem";
 import { Button } from "@/components/ui/button";
-import { Bell, Flame, Headphones, Image as ImageIcon, LogOut, Quote, Target, BookOpen, Check, Loader2, Users, UserPlus2 } from "lucide-react";
+import { Bell, Flame, Headphones, Image as ImageIcon, LogOut, Quote, Target, BookOpen, Check, Loader2, Users, UserPlus2, BadgeCheck } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { setPresence } from "@/lib/squads";

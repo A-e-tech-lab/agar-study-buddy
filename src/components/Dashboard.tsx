@@ -33,10 +33,17 @@ import { Bell, Flame, Headphones, Image as ImageIcon, LogOut, Quote, Target, Boo
 import { Link } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { setPresence } from "@/lib/squads";
+import { supabase } from "@/integrations/supabase/client";
 
 export function Dashboard() {
   const { user, displayName, signOut } = useAuth();
   const userId = user!.id;
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    void supabase
+      .rpc("has_role", { _user_id: userId, _role: "admin" })
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [userId]);
 
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -367,6 +374,14 @@ export function Dashboard() {
             >
               <Sparkles className="h-3.5 w-3.5" /> AI Mentor
             </Link>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold backdrop-blur-sm transition-smooth hover:bg-white/25"
+              >
+                <BadgeCheck className="h-3.5 w-3.5" /> Admin
+              </Link>
+            )}
           </nav>
         </div>
       </header>

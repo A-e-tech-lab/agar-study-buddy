@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as FocusRouteImport } from './routes/focus'
 import { Route as FriendsRouteImport } from './routes/friends'
 import { Route as MemoriesRouteImport } from './routes/memories'
@@ -22,6 +23,11 @@ import { Route as SquadsGroupIdRouteImport } from './routes/squads.$groupId'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FocusRoute = FocusRouteImport.update({
@@ -67,6 +73,7 @@ const SquadsGroupIdRoute = SquadsGroupIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/focus': typeof FocusRoute
   '/friends': typeof FriendsRoute
   '/memories': typeof MemoriesRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/focus': typeof FocusRoute
   '/friends': typeof FriendsRoute
   '/memories': typeof MemoriesRoute
@@ -90,6 +98,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/focus': typeof FocusRoute
   '/friends': typeof FriendsRoute
   '/memories': typeof MemoriesRoute
@@ -103,6 +112,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/focus'
     | '/friends'
     | '/memories'
@@ -114,6 +124,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/focus'
     | '/friends'
     | '/memories'
@@ -125,6 +136,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/focus'
     | '/friends'
     | '/memories'
@@ -137,6 +149,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   FocusRoute: typeof FocusRoute
   FriendsRoute: typeof FriendsRoute
   MemoriesRoute: typeof MemoriesRoute
@@ -153,6 +166,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/focus': {
@@ -227,6 +247,7 @@ const SquadsRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   FocusRoute: FocusRoute,
   FriendsRoute: FriendsRoute,
   MemoriesRoute: MemoriesRoute,

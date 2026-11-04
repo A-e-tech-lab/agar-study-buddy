@@ -390,6 +390,24 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -397,6 +415,13 @@ export type Database = {
     Functions: {
       generate_friend_code: { Args: never; Returns: string }
       generate_invite_token: { Args: never; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       is_group_member: {
         Args: { _group_id: string; _user_id: string }
         Returns: boolean
@@ -404,6 +429,7 @@ export type Database = {
       shared_group_user_ids: { Args: { _user_id: string }; Returns: string[] }
     }
     Enums: {
+      app_role: "admin" | "moderator" | "user"
       friendship_status: "pending" | "accepted"
     }
     CompositeTypes: {
@@ -532,6 +558,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "moderator", "user"],
       friendship_status: ["pending", "accepted"],
     },
   },

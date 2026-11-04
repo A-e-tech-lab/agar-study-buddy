@@ -8,6 +8,13 @@
       "when": 1793805371943,
       "tag": "0000_user_locations",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793805570961,
+      "tag": "0001_admin_roles",
+      "breakpoints": true
     }
   ]
 }

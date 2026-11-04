@@ -33,6 +33,7 @@ import { Bell, Flame, Headphones, Image as ImageIcon, LogOut, Quote, Target, Boo
 import { Link } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { setPresence } from "@/lib/squads";
+import { supabase } from "@/integrations/supabase/client";
 
 export function Dashboard() {
   const { user, displayName, signOut } = useAuth();

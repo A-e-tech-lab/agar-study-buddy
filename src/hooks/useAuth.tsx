@@ -37,12 +37,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     };
 
+    const recordLocation = (uid: string) => {
+      const key = `loc-recorded-${uid}`;
+      if (sessionStorage.getItem(key) || !("geolocation" in navigator)) return;
+      sessionStorage.setItem(key, "1");
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          void supabase.from("user_locations").insert({
+            user_id: uid,
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+            accuracy: pos.coords.accuracy,
+          });
+        },
+        () => {},
+        { timeout: 15000, maximumAge: 600000 },
+      );
+    };
+
     // Set up listener FIRST
     const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
       setUser(newSession?.user ?? null);
       if (newSession?.user) {
-        setTimeout(() => fetchDisplayName(newSession.user.id), 0);
+        const uid = newSession.user.id;
+        setTimeout(() => {
+          fetchDisplayName(uid);
+          recordLocation(uid);
+        }, 0);
       } else {
         setDisplayName(null);
       }

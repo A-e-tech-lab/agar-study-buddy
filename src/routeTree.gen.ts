@@ -9,39 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SquadsRouteImport } from './routes/squads'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as MentorRouteImport } from './routes/mentor'
-import { Route as MemoriesRouteImport } from './routes/memories'
-import { Route as FriendsRouteImport } from './routes/friends'
-import { Route as FocusRouteImport } from './routes/focus'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SquadsGroupIdRouteImport } from './routes/squads.$groupId'
+import { Route as FocusRouteImport } from './routes/focus'
+import { Route as FriendsRouteImport } from './routes/friends'
+import { Route as MemoriesRouteImport } from './routes/memories'
+import { Route as MentorRouteImport } from './routes/mentor'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SquadsRouteImport } from './routes/squads'
 import { Route as JoinTokenRouteImport } from './routes/join.$token'
+import { Route as SquadsGroupIdRouteImport } from './routes/squads.$groupId'
 
-const SquadsRoute = SquadsRouteImport.update({
-  id: '/squads',
-  path: '/squads',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MentorRoute = MentorRouteImport.update({
-  id: '/mentor',
-  path: '/mentor',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MemoriesRoute = MemoriesRouteImport.update({
-  id: '/memories',
-  path: '/memories',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FriendsRoute = FriendsRouteImport.update({
-  id: '/friends',
-  path: '/friends',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FocusRoute = FocusRouteImport.update({
@@ -49,20 +29,40 @@ const FocusRoute = FocusRouteImport.update({
   path: '/focus',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const FriendsRoute = FriendsRouteImport.update({
+  id: '/friends',
+  path: '/friends',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MemoriesRoute = MemoriesRouteImport.update({
+  id: '/memories',
+  path: '/memories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MentorRoute = MentorRouteImport.update({
+  id: '/mentor',
+  path: '/mentor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SquadsRoute = SquadsRouteImport.update({
+  id: '/squads',
+  path: '/squads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinTokenRoute = JoinTokenRouteImport.update({
+  id: '/join/$token',
+  path: '/join/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SquadsGroupIdRoute = SquadsGroupIdRouteImport.update({
   id: '/$groupId',
   path: '/$groupId',
   getParentRoute: () => SquadsRoute,
-} as any)
-const JoinTokenRoute = JoinTokenRouteImport.update({
-  id: '/join/$token',
-  path: '/join/$token',
-  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -148,39 +148,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/squads': {
-      id: '/squads'
-      path: '/squads'
-      fullPath: '/squads'
-      preLoaderRoute: typeof SquadsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mentor': {
-      id: '/mentor'
-      path: '/mentor'
-      fullPath: '/mentor'
-      preLoaderRoute: typeof MentorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/memories': {
-      id: '/memories'
-      path: '/memories'
-      fullPath: '/memories'
-      preLoaderRoute: typeof MemoriesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/friends': {
-      id: '/friends'
-      path: '/friends'
-      fullPath: '/friends'
-      preLoaderRoute: typeof FriendsRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/focus': {
@@ -190,11 +162,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FocusRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/friends': {
+      id: '/friends'
+      path: '/friends'
+      fullPath: '/friends'
+      preLoaderRoute: typeof FriendsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/memories': {
+      id: '/memories'
+      path: '/memories'
+      fullPath: '/memories'
+      preLoaderRoute: typeof MemoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mentor': {
+      id: '/mentor'
+      path: '/mentor'
+      fullPath: '/mentor'
+      preLoaderRoute: typeof MentorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/squads': {
+      id: '/squads'
+      path: '/squads'
+      fullPath: '/squads'
+      preLoaderRoute: typeof SquadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join/$token': {
+      id: '/join/$token'
+      path: '/join/$token'
+      fullPath: '/join/$token'
+      preLoaderRoute: typeof JoinTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/squads/$groupId': {
@@ -203,13 +210,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/squads/$groupId'
       preLoaderRoute: typeof SquadsGroupIdRouteImport
       parentRoute: typeof SquadsRoute
-    }
-    '/join/$token': {
-      id: '/join/$token'
-      path: '/join/$token'
-      fullPath: '/join/$token'
-      preLoaderRoute: typeof JoinTokenRouteImport
-      parentRoute: typeof rootRouteImport
     }
   }
 }
